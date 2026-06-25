@@ -1,0 +1,16 @@
+{
+  "loader": "neoforge:item_layers",
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "divisionceremony:item/reversing_hoe_base",
+    "layer1": "divisionceremony:item/reversing_hoe_glow"
+  },
+  "neoforge_data": {
+    "layers": {
+      "1": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    }
+  }
+}

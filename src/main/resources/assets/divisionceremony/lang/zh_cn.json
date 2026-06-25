@@ -1,0 +1,21 @@
+{
+  "itemGroup.divisionceremony": "分割仪式",
+
+  "item.divisionceremony.destruction_pickaxe": "毁灭之镐",
+  "item.divisionceremony.erosion_shovel": "侵蚀之铲",
+  "item.divisionceremony.healing_axe": "治愈之斧",
+  "item.divisionceremony.reversing_hoe": "回溯之锄",
+  "item.divisionceremony.etheric_sword": "天域之剑",
+  "item.divisionceremony.division_sigil": "分割徽章",
+  "item.divisionceremony.unstable_ingot": "不稳定金属锭",
+  "item.divisionceremony.unstable_nugget": "不稳定金属粒",
+
+  "item.divisionceremony.destruction_pickaxe.desc": "注入毁灭之力的镐",
+  "item.divisionceremony.erosion_shovel.desc": "侵蚀大地的铲",
+  "item.divisionceremony.healing_axe.desc": "具有治愈属性的斧",
+  "item.divisionceremony.reversing_hoe.desc": "逆转时间的锄",
+  "item.divisionceremony.etheric_sword.desc": "来自天域的剑",
+  "item.divisionceremony.division_sigil.desc": "分割的徽章",
+  "item.divisionceremony.unstable_ingot.desc": "不稳定的金属锭",
+  "item.divisionceremony.unstable_nugget.desc": "不稳定的金属粒"
+}

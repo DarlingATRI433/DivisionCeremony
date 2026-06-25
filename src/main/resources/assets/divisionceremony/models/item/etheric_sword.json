@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "divisionceremony:item/etheric_sword_base"
+  }
+}

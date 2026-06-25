@@ -1,0 +1,21 @@
+{
+  "itemGroup.divisionceremony": "Division Ceremony",
+
+  "item.divisionceremony.destruction_pickaxe": "Destruction Pickaxe",
+  "item.divisionceremony.erosion_shovel": "Erosion Shovel",
+  "item.divisionceremony.healing_axe": "Healing Axe",
+  "item.divisionceremony.reversing_hoe": "Reversing Hoe",
+  "item.divisionceremony.etheric_sword": "Etheric Sword",
+  "item.divisionceremony.division_sigil": "Division Sigil",
+  "item.divisionceremony.unstable_ingot": "Unstable Ingot",
+  "item.divisionceremony.unstable_nugget": "Unstable Nugget",
+
+  "item.divisionceremony.destruction_pickaxe.desc": "A pickaxe infused with destructive power",
+  "item.divisionceremony.erosion_shovel.desc": "A shovel that erodes the earth",
+  "item.divisionceremony.healing_axe.desc": "An axe with healing properties",
+  "item.divisionceremony.reversing_hoe.desc": "A hoe that reverses time",
+  "item.divisionceremony.etheric_sword.desc": "A sword from the ether",
+  "item.divisionceremony.division_sigil.desc": "A sigil of division",
+  "item.divisionceremony.unstable_ingot.desc": "An unstable ingot of metal",
+  "item.divisionceremony.unstable_nugget.desc": "An unstable nugget of metal"
+}

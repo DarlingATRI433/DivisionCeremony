@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "divisionceremony:item/unstable_nugget"
+  }
+}
