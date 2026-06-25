@@ -1,7 +1,9 @@
 package com.qwq.division.item;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -45,12 +47,12 @@ public class UnstableIngotItem extends Item {
     }
 
     /**
-     * 触发爆炸：不破坏方块（ExplosionInteraction.NONE），击杀玩家并清除背包内所有不稳定锭
+     * 触发爆炸：不破坏方块，必定击杀玩家，清除背包内所有不稳定锭
      */
     public static void triggerExplosion(Level level, Entity entity, ItemStack stack) {
         if (level.isClientSide) return;
 
-        // 无方块破坏的爆炸（NONE 内部使用 BlockInteraction.KEEP）
+        // 无方块破坏的爆炸（ExplosionInteraction.NONE = BlockInteraction.KEEP）
         level.explode(
                 null,
                 entity.getX(), entity.getY(), entity.getZ(),
@@ -67,8 +69,8 @@ public class UnstableIngotItem extends Item {
                     player.getInventory().setItem(i, ItemStack.EMPTY);
                 }
             }
-            // 击杀玩家
-            player.hurt(player.level().damageSources().explosion(null), Float.MAX_VALUE);
+            // 必定击杀 —— 使用 genericKill 绕过护甲/抗性
+            player.hurt(player.level().damageSources().genericKill(), Float.MAX_VALUE);
         }
 
         stack.setCount(0);
@@ -80,12 +82,17 @@ public class UnstableIngotItem extends Item {
         if (creationTime != null && context.level() != null) {
             long elapsed = context.level().getGameTime() - creationTime;
             long remaining = TICKS_TO_EXPLODE - elapsed;
+            // 红色风格
+            Style redStyle = Style.EMPTY.withColor(ChatFormatting.RED);
             if (remaining > 0) {
                 tooltipComponents.add(Component.translatable(
                         "item.divisionceremony.unstable_ingot.timer",
-                        String.format("%.1f", remaining / 20.0)));
+                        String.format("%.1f", remaining / 20.0))
+                        .withStyle(redStyle));
             } else {
-                tooltipComponents.add(Component.translatable("item.divisionceremony.unstable_ingot.exploding"));
+                tooltipComponents.add(Component.translatable(
+                        "item.divisionceremony.unstable_ingot.exploding")
+                        .withStyle(redStyle));
             }
         }
     }
