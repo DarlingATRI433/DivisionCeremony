@@ -20,7 +20,7 @@ public class ModItems {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, DivisionCeremony.MODID);
 
-    // ==================== 工具 ====================
+    // ==================== 工具（无法破坏） ====================
     public static final DeferredItem<DestructionPickaxeItem> DESTRUCTION_PICKAXE =
             ITEMS.register("destruction_pickaxe", DestructionPickaxeItem::new);
 
@@ -36,12 +36,12 @@ public class ModItems {
     public static final DeferredItem<ReversingHoeItem> REVERSING_HOE =
             ITEMS.register("reversing_hoe", ReversingHoeItem::new);
 
-    // ==================== 普通物品 ====================
-    public static final DeferredItem<SimpleDivisionItem> DIVISION_SIGIL =
-            ITEMS.register("division_sigil", SimpleDivisionItem::new);
+    // ==================== 特殊物品 ====================
+    public static final DeferredItem<DivisionSigilItem> DIVISION_SIGIL =
+            ITEMS.register("division_sigil", DivisionSigilItem::new);
 
-    public static final DeferredItem<SimpleDivisionItem> UNSTABLE_INGOT =
-            ITEMS.register("unstable_ingot", SimpleDivisionItem::new);
+    public static final DeferredItem<UnstableIngotItem> UNSTABLE_INGOT =
+            ITEMS.register("unstable_ingot", UnstableIngotItem::new);
 
     public static final DeferredItem<SimpleDivisionItem> UNSTABLE_NUGGET =
             ITEMS.register("unstable_nugget", SimpleDivisionItem::new);

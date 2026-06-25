@@ -16,6 +16,9 @@
   "item.divisionceremony.reversing_hoe.desc": "逆转时间的锄",
   "item.divisionceremony.etheric_sword.desc": "来自天域的剑",
   "item.divisionceremony.division_sigil.desc": "分割的徽章",
+  "item.divisionceremony.division_sigil.drop_hint": "凋灵与末影龙掉落",
   "item.divisionceremony.unstable_ingot.desc": "不稳定的金属锭",
+  "item.divisionceremony.unstable_ingot.timer": "将在 %s 秒后爆炸",
+  "item.divisionceremony.unstable_ingot.exploding": "即将爆炸！",
   "item.divisionceremony.unstable_nugget.desc": "不稳定的金属粒"
 }
