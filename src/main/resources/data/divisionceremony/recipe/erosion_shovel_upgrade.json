@@ -1,7 +1,7 @@
 {
   "type": "minecraft:smithing_transform",
   "template": {
-    "item": "divisionceremony:mobius_ingot"
+    "item": "divisionceremony:pseudo_inversion_sigil"
   },
   "base": {
     "item": "divisionceremony:erosion_shovel"

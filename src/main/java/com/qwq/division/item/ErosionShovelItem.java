@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * 侵蚀之铲 - 软方块速掘，上方沙砾消除(无掉落)；锻造台升级后获得效率X并正常掉落
+ * 侵蚀之铲 - 软方块速掘，上方沙砾消除(无掉落)；锻造台升级后获得效率X，消除功能失效，正常掉落
  */
 public class ErosionShovelItem extends ShovelItem {
     public ErosionShovelItem() {
@@ -48,13 +48,5 @@ public class ErosionShovelItem extends ShovelItem {
             }
         }
         return super.mineBlock(stack, level, state, pos, miningEntity);
-    }
-
-    @Override
-    public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
-        if (stack.get(DivisionDataComponents.UPGRADED) != null) {
-            return super.isCorrectToolForDrops(stack, state);
-        }
-        return state.is(BlockTags.MINEABLE_WITH_SHOVEL);
     }
 }
