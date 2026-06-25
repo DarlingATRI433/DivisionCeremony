@@ -4,6 +4,7 @@ import com.qwq.division.DivisionCeremony;
 import com.qwq.division.item.DivisionDataComponents;
 import com.qwq.division.item.EthericSwordItem;
 import com.qwq.division.item.HealingAxeItem;
+import com.qwq.division.item.SoulFragmentItem;
 import com.qwq.division.item.UnstableIngotItem;
 import com.qwq.division.item.ModItems;
 
@@ -37,10 +38,6 @@ public class DivisionEventHandler {
 
     // ==================== 物品攻击行为 ====================
 
-    /**
-     * 天域之剑：魔法伤害（无视护甲）
-     * 治愈之斧：攻击非亡灵时取消伤害，给予生命恢复效果
-     */
     @SubscribeEvent
     public static void onAttackEntity(AttackEntityEvent event) {
         if (event.getEntity().level().isClientSide) return;
@@ -66,10 +63,6 @@ public class DivisionEventHandler {
 
     // ==================== 合成事件 ====================
 
-    /**
-     * 分割徽章合成后保留（无限使用）
-     * 9粒合成的不稳定锭移除计时器（稳定版）
-     */
     @SubscribeEvent
     public static void onItemCrafted(PlayerEvent.ItemCraftedEvent event) {
         ItemStack result = event.getCrafting();
@@ -102,13 +95,23 @@ public class DivisionEventHandler {
                 result.remove(timerType());
             }
         }
+
+        // 灵魂碎片合成（天域之剑 → 灵魂碎片）—— 扣除10%血量上限
+        if (result.getItem() instanceof SoulFragmentItem) {
+            for (int i = 0; i < event.getInventory().getContainerSize(); i++) {
+                ItemStack stack = event.getInventory().getItem(i);
+                if (stack.getItem() instanceof EthericSwordItem) {
+                    Player player = event.getEntity();
+                    double currentMax = player.getAttributeValue(Attributes.MAX_HEALTH);
+                    player.getAttribute(Attributes.MAX_HEALTH).setBaseValue(Math.max(2.0, currentMax * 0.9));
+                    break;
+                }
+            }
+        }
     }
 
     // ==================== 掉落事件 ====================
 
-    /**
-     * 凋灵和末影龙死亡时掉落分割徽章
-     */
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof WitherBoss || event.getEntity() instanceof EnderDragon) {
@@ -124,9 +127,6 @@ public class DivisionEventHandler {
         }
     }
 
-    /**
-     * 不稳定金属锭掉落即爆炸
-     */
     @SubscribeEvent
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof ItemEntity itemEntity) {
@@ -142,9 +142,6 @@ public class DivisionEventHandler {
         }
     }
 
-    /**
-     * 关闭容器时检查不稳定金属锭 —— 加速倒计时归零
-     */
     @SubscribeEvent
     public static void onContainerClose(PlayerContainerEvent.Close event) {
         Player player = event.getEntity();

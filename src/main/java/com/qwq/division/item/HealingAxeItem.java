@@ -9,7 +9,7 @@ import net.minecraft.world.item.component.Unbreakable;
 import net.minecraft.world.level.Level;
 
 /**
- * 治愈之斧 - 手持每30秒回复1饱食度+2饱和度，攻击非亡灵给予生命恢复
+ * 治愈之斧 - 手持（主手/副手）每30秒回复1饱食度+2饱和度，攻击非亡灵给予生命恢复
  */
 public class HealingAxeItem extends AxeItem {
     private static final int FEED_INTERVAL = 600; // 30秒 = 600刻
@@ -22,9 +22,12 @@ public class HealingAxeItem extends AxeItem {
 
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
-        if (!selected || level.isClientSide || !(entity instanceof Player player)) return;
+        if (level.isClientSide || !(entity instanceof Player player)) return;
 
-        // 每30秒回复1饱食度+2饱和度
+        // 主手或副手持有时均生效
+        boolean isHeld = selected || ItemStack.isSameItem(player.getOffhandItem(), stack);
+        if (!isHeld) return;
+
         if (level.getGameTime() % FEED_INTERVAL == 0) {
             player.getFoodData().eat(1, 1.0F);
         }

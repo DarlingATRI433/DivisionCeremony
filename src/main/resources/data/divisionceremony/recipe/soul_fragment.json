@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "divisionceremony:etheric_sword"
+    }
+  ],
+  "result": {
+    "id": "divisionceremony:soul_fragment",
+    "count": 1
+  }
+}

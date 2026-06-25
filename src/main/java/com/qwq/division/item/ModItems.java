@@ -43,11 +43,11 @@ public class ModItems {
     public static final DeferredItem<SimpleDivisionItem> UNSTABLE_NUGGET =
             ITEMS.register("unstable_nugget", SimpleDivisionItem::new);
 
-    public static final DeferredItem<SimpleDivisionItem> SOUL_FRAGMENT =
-            ITEMS.register("soul_fragment", SimpleDivisionItem::new);
+    public static final DeferredItem<SoulFragmentItem> SOUL_FRAGMENT =
+            ITEMS.register("soul_fragment", SoulFragmentItem::new);
 
-    public static final DeferredItem<SimpleDivisionItem> REINFORCED_WATERING_CAN =
-            ITEMS.register("reinforced_watering_can", SimpleDivisionItem::new);
+    public static final DeferredItem<ReinforcedWateringCanItem> REINFORCED_WATERING_CAN =
+            ITEMS.register("reinforced_watering_can", ReinforcedWateringCanItem::new);
 
     // ==================== 创造模式标签页 ====================
 
