@@ -3,7 +3,7 @@
   "pattern": [
     "D",
     "S",
-    "I"
+    "N"
   ],
   "key": {
     "D": {
@@ -12,8 +12,8 @@
     "S": {
       "item": "divisionceremony:division_sigil"
     },
-    "I": {
-      "item": "minecraft:iron_nugget"
+    "N": {
+      "item": "minecraft:netherite_scrap"
     }
   },
   "result": {

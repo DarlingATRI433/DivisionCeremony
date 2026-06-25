@@ -10,11 +10,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
 /**
- * 不稳定金属锭 - 合成后10秒内不使用会爆炸
+ * 不稳定金属锭 - 合成后10秒内不使用会爆炸（9粒合成版本稳定）
  */
 public class UnstableIngotItem extends Item {
     public static final long TICKS_TO_EXPLODE = 200L; // 10秒 = 200刻
@@ -47,30 +48,30 @@ public class UnstableIngotItem extends Item {
     }
 
     /**
-     * 触发爆炸：不破坏方块，必定击杀玩家，清除背包内所有不稳定锭
+     * 触发爆炸：不破坏方块，必定击杀附近所有玩家并清除其背包内不稳定锭
      */
     public static void triggerExplosion(Level level, Entity entity, ItemStack stack) {
         if (level.isClientSide) return;
 
-        // 无方块破坏的爆炸（ExplosionInteraction.NONE = BlockInteraction.KEEP）
-        level.explode(
-                null,
-                entity.getX(), entity.getY(), entity.getZ(),
-                3.0F,
-                false,
-                Level.ExplosionInteraction.NONE
-        );
+        double x = entity.getX();
+        double y = entity.getY();
+        double z = entity.getZ();
 
-        if (entity instanceof Player player) {
-            // 清除背包中所有不稳定锭
-            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-                ItemStack invStack = player.getInventory().getItem(i);
+        // 无方块破坏的爆炸
+        level.explode(null, x, y, z, 3.0F, false, Level.ExplosionInteraction.NONE);
+
+        // 击杀附近所有玩家（无论触发者是玩家还是掉落物）
+        AABB area = new AABB(x - 6, y - 6, z - 6, x + 6, y + 6, z + 6);
+        for (Player nearby : level.getEntitiesOfClass(Player.class, area)) {
+            // 清除该玩家背包中所有不稳定锭
+            for (int i = 0; i < nearby.getInventory().getContainerSize(); i++) {
+                ItemStack invStack = nearby.getInventory().getItem(i);
                 if (invStack.getItem() instanceof UnstableIngotItem) {
-                    player.getInventory().setItem(i, ItemStack.EMPTY);
+                    nearby.getInventory().setItem(i, ItemStack.EMPTY);
                 }
             }
-            // 必定击杀 —— 使用 genericKill 绕过护甲/抗性
-            player.hurt(player.level().damageSources().genericKill(), Float.MAX_VALUE);
+            // 必定击杀
+            nearby.hurt(level.damageSources().genericKill(), Float.MAX_VALUE);
         }
 
         stack.setCount(0);
@@ -82,7 +83,6 @@ public class UnstableIngotItem extends Item {
         if (creationTime != null && context.level() != null) {
             long elapsed = context.level().getGameTime() - creationTime;
             long remaining = TICKS_TO_EXPLODE - elapsed;
-            // 红色风格
             Style redStyle = Style.EMPTY.withColor(ChatFormatting.RED);
             if (remaining > 0) {
                 tooltipComponents.add(Component.translatable(

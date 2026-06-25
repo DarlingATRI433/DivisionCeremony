@@ -30,23 +30,44 @@ public class DivisionEventHandler {
 
     /**
      * 分割徽章合成后保留（无限使用）
+     * 9粒合成的不稳定锭移除计时器（稳定版）
      */
     @SubscribeEvent
     public static void onItemCrafted(PlayerEvent.ItemCraftedEvent event) {
+        ItemStack result = event.getCrafting();
+        if (event.getEntity().level().isClientSide) return;
+
+        // 分割徽章合成保留
         for (int i = 0; i < event.getInventory().getContainerSize(); i++) {
             ItemStack stack = event.getInventory().getItem(i);
             if (stack.getItem() == ModItems.DIVISION_SIGIL.get()) {
-                if (!event.getEntity().level().isClientSide) {
-                    event.getEntity().addItem(new ItemStack(ModItems.DIVISION_SIGIL.get()));
-                }
+                event.getEntity().addItem(new ItemStack(ModItems.DIVISION_SIGIL.get()));
                 break;
+            }
+        }
+
+        // 9粒压缩合成的不稳定锭 → 移除计时器（不爆炸）
+        if (result.getItem() == ModItems.UNSTABLE_INGOT.get()) {
+            boolean allNuggets = true;
+            int count = 0;
+            for (int i = 0; i < event.getInventory().getContainerSize(); i++) {
+                ItemStack stack = event.getInventory().getItem(i);
+                if (!stack.isEmpty()) {
+                    count++;
+                    if (stack.getItem() != ModItems.UNSTABLE_NUGGET.get()) {
+                        allNuggets = false;
+                        break;
+                    }
+                }
+            }
+            if (allNuggets && count == 9) {
+                result.remove(timerType());
             }
         }
     }
 
     /**
      * 凋灵和末影龙死亡时掉落分割徽章
-     * 末影龙的 tickDeath() 不调用 dropAllDeathLoot()，故用 LivingDeathEvent 统一处理
      */
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
