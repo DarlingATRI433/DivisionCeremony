@@ -11,11 +11,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * 强化洒水壶 - 右键长按催熟9x9范围农作物和树苗，带水滴粒子效果
+ * 强化洒水壶 - 右键长按催熟9x9范围农作物和树苗，带水滴粒子
  */
 public class ReinforcedWateringCanItem extends Item {
     private static final int RADIUS = 4; // 9x9 = 半径4
@@ -27,7 +28,7 @@ public class ReinforcedWateringCanItem extends Item {
 
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.NONE; // 不显示手持动画
+        return UseAnim.NONE;
     }
 
     @Override
@@ -49,29 +50,35 @@ public class ReinforcedWateringCanItem extends Item {
 
         for (int dx = -RADIUS; dx <= RADIUS; dx++) {
             for (int dz = -RADIUS; dz <= RADIUS; dz++) {
-                BlockPos pos = center.offset(dx, 0, dz);
+                // 检查多个Y层：脚下、同层、耕地上层、高植株
+                for (int dy = -1; dy <= 2; dy++) {
+                    BlockPos pos = center.offset(dx, dy, dz);
+                    BlockState state = level.getBlockState(pos);
 
-                // 水滴粒子效果
-                if (level.random.nextFloat() < 0.25f) {
-                    serverLevel.sendParticles(
-                            ParticleTypes.FALLING_WATER,
-                            pos.getX() + level.random.nextFloat(),
-                            pos.getY() + 1.2 + level.random.nextFloat() * 0.5,
-                            pos.getZ() + level.random.nextFloat(),
-                            1, 0.1, 0.05, 0.1, 0.02);
-                }
+                    // 排除草方块
+                    if (state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.SHORT_GRASS)
+                            || state.is(Blocks.TALL_GRASS)) continue;
 
-                // 催熟农作物和树苗
-                BlockState state = level.getBlockState(pos);
-                if (state.getBlock() instanceof BonemealableBlock bonemealable) {
-                    if (bonemealable.isValidBonemealTarget(level, pos, state)) {
-                        if (level.random.nextFloat() < 0.08f) {
-                            bonemealable.performBonemeal(serverLevel, level.random, pos, state);
-                            // 生长粒子
-                            serverLevel.sendParticles(
-                                    ParticleTypes.HAPPY_VILLAGER,
-                                    pos.getX() + 0.5, pos.getY() + 0.7, pos.getZ() + 0.5,
-                                    2, 0.2, 0.1, 0.2, 0.5);
+                    // 水滴粒子
+                    if (level.random.nextFloat() < 0.2f) {
+                        serverLevel.sendParticles(
+                                ParticleTypes.FALLING_WATER,
+                                pos.getX() + level.random.nextFloat(),
+                                pos.getY() + 0.8 + level.random.nextFloat() * 0.5,
+                                pos.getZ() + level.random.nextFloat(),
+                                1, 0.1, 0.05, 0.1, 0.02);
+                    }
+
+                    // 催熟
+                    if (state.getBlock() instanceof BonemealableBlock bonemealable) {
+                        if (bonemealable.isValidBonemealTarget(level, pos, state)) {
+                            if (level.random.nextFloat() < 0.06f) {
+                                bonemealable.performBonemeal(serverLevel, level.random, pos, state);
+                                serverLevel.sendParticles(
+                                        ParticleTypes.HAPPY_VILLAGER,
+                                        pos.getX() + 0.5, pos.getY() + 0.7, pos.getZ() + 0.5,
+                                        2, 0.2, 0.1, 0.2, 0.5);
+                            }
                         }
                     }
                 }
