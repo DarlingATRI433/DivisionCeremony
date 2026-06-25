@@ -37,6 +37,9 @@ public class ModItems {
     public static final DeferredItem<DivisionSigilItem> DIVISION_SIGIL =
             ITEMS.register("division_sigil", DivisionSigilItem::new);
 
+    public static final DeferredItem<PseudoInversionSigilItem> PSEUDO_INVERSION_SIGIL =
+            ITEMS.register("pseudo_inversion_sigil", PseudoInversionSigilItem::new);
+
     public static final DeferredItem<UnstableIngotItem> UNSTABLE_INGOT =
             ITEMS.register("unstable_ingot", UnstableIngotItem::new);
 
@@ -62,6 +65,7 @@ public class ModItems {
                     output.accept(HEALING_AXE.get());
                     output.accept(REVERSING_HOE.get());
                     output.accept(DIVISION_SIGIL.get());
+                    output.accept(PSEUDO_INVERSION_SIGIL.get());
                     output.accept(UNSTABLE_INGOT.get());
                     output.accept(UNSTABLE_NUGGET.get());
                     output.accept(SOUL_FRAGMENT.get());

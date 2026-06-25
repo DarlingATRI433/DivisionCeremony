@@ -2,6 +2,7 @@ package com.qwq.division.event;
 
 import com.qwq.division.DivisionCeremony;
 import com.qwq.division.item.DivisionDataComponents;
+import com.qwq.division.item.DivisionSigilItem;
 import com.qwq.division.item.EthericSwordItem;
 import com.qwq.division.item.HealingAxeItem;
 import com.qwq.division.item.SoulFragmentItem;
@@ -44,7 +45,6 @@ public class DivisionEventHandler {
         Player player = event.getEntity();
         ItemStack stack = player.getMainHandItem();
 
-        // 天域之剑 —— 转为魔法伤害，无视护甲
         if (stack.getItem() instanceof EthericSwordItem && event.getTarget() instanceof LivingEntity target) {
             event.setCanceled(true);
             float damage = (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE);
@@ -52,7 +52,6 @@ public class DivisionEventHandler {
             return;
         }
 
-        // 治愈之斧 —— 非亡灵目标不造成伤害，给予生命恢复
         if (stack.getItem() instanceof HealingAxeItem && event.getTarget() instanceof LivingEntity target) {
             if (!target.isInvertedHealAndHarm()) {
                 event.setCanceled(true);
@@ -68,39 +67,61 @@ public class DivisionEventHandler {
         ItemStack result = event.getCrafting();
         if (event.getEntity().level().isClientSide) return;
 
-        // 分割徽章合成保留
+        // 分割徽章合成消耗耐久
         for (int i = 0; i < event.getInventory().getContainerSize(); i++) {
             ItemStack stack = event.getInventory().getItem(i);
-            if (stack.getItem() == ModItems.DIVISION_SIGIL.get()) {
-                event.getEntity().addItem(new ItemStack(ModItems.DIVISION_SIGIL.get()));
+            if (stack.getItem() instanceof DivisionSigilItem) {
+                int newDamage = stack.getDamageValue() + 1;
+                if (newDamage < stack.getMaxDamage()) {
+                    ItemStack returned = new ItemStack(ModItems.DIVISION_SIGIL.get());
+                    returned.setDamageValue(newDamage);
+                    event.getEntity().addItem(returned);
+                }
+                // 耐久耗尽则摧毁，不返还
                 break;
             }
         }
 
-        // 9粒压缩合成的不稳定锭 → 移除计时器（不爆炸）
+        // 不稳定金属锭 —— 稳定版判断
         if (result.getItem() == ModItems.UNSTABLE_INGOT.get()) {
-            boolean allNuggets = true;
-            int count = 0;
+            boolean makeStable = false;
+
+            // 伪逆徽章合成 → 稳定
             for (int i = 0; i < event.getInventory().getContainerSize(); i++) {
-                ItemStack stack = event.getInventory().getItem(i);
-                if (!stack.isEmpty()) {
-                    count++;
-                    if (stack.getItem() != ModItems.UNSTABLE_NUGGET.get()) {
-                        allNuggets = false;
-                        break;
-                    }
+                if (event.getInventory().getItem(i).getItem() == ModItems.PSEUDO_INVERSION_SIGIL.get()) {
+                    makeStable = true;
+                    break;
                 }
             }
-            if (allNuggets && count == 9) {
+
+            // 9粒压缩合成 → 稳定
+            if (!makeStable) {
+                boolean allNuggets = true;
+                int count = 0;
+                for (int i = 0; i < event.getInventory().getContainerSize(); i++) {
+                    ItemStack stack = event.getInventory().getItem(i);
+                    if (!stack.isEmpty()) {
+                        count++;
+                        if (stack.getItem() != ModItems.UNSTABLE_NUGGET.get()) {
+                            allNuggets = false;
+                            break;
+                        }
+                    }
+                }
+                if (allNuggets && count == 9) {
+                    makeStable = true;
+                }
+            }
+
+            if (makeStable) {
                 result.remove(timerType());
             }
         }
 
-        // 灵魂碎片合成（天域之剑 → 灵魂碎片）—— 扣除10%血量上限
+        // 灵魂碎片合成 → 扣除10%血量上限
         if (result.getItem() instanceof SoulFragmentItem) {
             for (int i = 0; i < event.getInventory().getContainerSize(); i++) {
-                ItemStack stack = event.getInventory().getItem(i);
-                if (stack.getItem() instanceof EthericSwordItem) {
+                if (event.getInventory().getItem(i).getItem() instanceof EthericSwordItem) {
                     Player player = event.getEntity();
                     double currentMax = player.getAttributeValue(Attributes.MAX_HEALTH);
                     player.getAttribute(Attributes.MAX_HEALTH).setBaseValue(Math.max(2.0, currentMax * 0.9));

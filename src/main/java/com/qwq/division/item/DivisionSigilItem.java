@@ -8,11 +8,11 @@ import net.minecraft.world.item.TooltipFlag;
 import java.util.List;
 
 /**
- * 分割徽章 - 可无限合成使用，凋灵/末影龙掉落
+ * 分割徽章 - 耐久50，合成消耗耐久，凋灵/末影龙掉落
  */
 public class DivisionSigilItem extends Item {
     public DivisionSigilItem() {
-        super(new Item.Properties().stacksTo(1));
+        super(new Item.Properties().stacksTo(1).durability(50));
     }
 
     @Override
