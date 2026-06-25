@@ -27,5 +27,15 @@
   "ritual.divisionceremony.failed_msg": "仪式已失败... 黎明到来了。",
   "ritual.divisionceremony.sigil_converted": "你的分割徽章已转化为伪逆徽章！",
   "ritual.divisionceremony.unbound": "已解除仪式绑定。",
-  "ritual.divisionceremony.wave": "第 %d/%d 波"
+  "ritual.divisionceremony.wave": "第 %d/%d 波",
+
+  "config.divisionceremony.title": "分割仪式 配置",
+  "config.divisionceremony.category.unstable_ingot": "不稳定金属锭",
+  "config.divisionceremony.category.ritual": "分割仪式",
+  "config.divisionceremony.unstable_ingot.timer": "爆炸计时",
+  "config.divisionceremony.ritual.waves": "总波数",
+  "config.divisionceremony.ritual.mobs_per_wave": "每波怪物数量",
+  "config.divisionceremony.ritual.mob_types": "怪物类型",
+  "config.divisionceremony.seconds": "秒",
+  "config.divisionceremony.waves_unit": "波"
 }

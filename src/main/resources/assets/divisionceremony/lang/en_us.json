@@ -27,5 +27,15 @@
   "ritual.divisionceremony.failed_msg": "The ritual has failed... Dawn has arrived.",
   "ritual.divisionceremony.sigil_converted": "Your Division Sigil has been transformed into a Pseudo-Inversion Sigil!",
   "ritual.divisionceremony.unbound": "Ritual binding removed.",
-  "ritual.divisionceremony.wave": "Wave %d/%d"
+  "ritual.divisionceremony.wave": "Wave %d/%d",
+
+  "config.divisionceremony.title": "Division Ceremony Config",
+  "config.divisionceremony.category.unstable_ingot": "Unstable Ingot",
+  "config.divisionceremony.category.ritual": "Division Ritual",
+  "config.divisionceremony.unstable_ingot.timer": "Explosion Timer",
+  "config.divisionceremony.ritual.waves": "Total Waves",
+  "config.divisionceremony.ritual.mobs_per_wave": "Mobs Per Wave",
+  "config.divisionceremony.ritual.mob_types": "Mob Types",
+  "config.divisionceremony.seconds": "sec",
+  "config.divisionceremony.waves_unit": "waves"
 }

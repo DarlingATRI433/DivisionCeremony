@@ -28,6 +28,7 @@ sourceSets.main.resources {
 
 repositories {
     // Add here additional repositories if required by some of the dependencies below.
+    maven { url "https://maven.shedaniel.me/" }
 }
 
 base {
@@ -132,6 +133,9 @@ dependencies {
 
     // Example mod dependency using a file as dependency
     // implementation files("libs/coolmod-${mc_version}-${coolmod_version}.jar")
+
+    // Cloth Config API - 配置界面
+    implementation "me.shedaniel.cloth:cloth-config-neoforge:15.0.140"
 
     // Example project dependency using a sister or child project:
     // implementation project(":myproject")
