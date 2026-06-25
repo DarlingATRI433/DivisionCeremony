@@ -1,5 +1,6 @@
 package com.qwq.division.event;
 
+import com.qwq.division.Config;
 import com.qwq.division.DivisionCeremony;
 import com.qwq.division.item.DivisionDataComponents;
 import com.qwq.division.item.DivisionSigilItem;
@@ -243,7 +244,7 @@ public class DivisionEventHandler {
                 if (ritual.spawnedMobs.isEmpty()) {
                     ritual.currentWave++;
 
-                    if (ritual.currentWave >= RitualManager.TOTAL_WAVES) {
+                    if (ritual.currentWave >= Config.RITUAL_TOTAL_WAVES.get()) {
                         completeRitual(ritual);
                     } else {
                         spawnNextWave(ritual);
@@ -258,7 +259,7 @@ public class DivisionEventHandler {
         ritual.bossBar.setName(Component.translatable("ritual.divisionceremony.progress")
                 .append(" - ")
                 .append(Component.translatable("ritual.divisionceremony.wave",
-                        ritual.currentWave + 1, RitualManager.TOTAL_WAVES)));
+                        ritual.currentWave + 1, Config.RITUAL_TOTAL_WAVES.get())));
         ritual.updateProgress();
     }
 

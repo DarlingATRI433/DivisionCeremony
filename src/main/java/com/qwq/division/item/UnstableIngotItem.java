@@ -1,5 +1,6 @@
 package com.qwq.division.item;
 
+import com.qwq.division.Config;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
@@ -18,7 +19,6 @@ import java.util.List;
  * 不稳定金属锭 - 合成后10秒内不使用会爆炸（9粒合成版本稳定）
  */
 public class UnstableIngotItem extends Item {
-    public static final long TICKS_TO_EXPLODE = 200L; // 10秒 = 200刻
 
     public UnstableIngotItem() {
         super(new Item.Properties());
@@ -42,7 +42,8 @@ public class UnstableIngotItem extends Item {
         if (creationTime == null) return;
 
         long elapsed = level.getGameTime() - creationTime;
-        if (elapsed >= TICKS_TO_EXPLODE) {
+        long maxTicks = Config.UNSTABLE_INGOT_TIMER.get() * 20L;
+        if (elapsed >= maxTicks) {
             triggerExplosion(level, entity, stack);
         }
     }
@@ -82,7 +83,8 @@ public class UnstableIngotItem extends Item {
         Long creationTime = stack.get(timerType());
         if (creationTime != null && context.level() != null) {
             long elapsed = context.level().getGameTime() - creationTime;
-            long remaining = TICKS_TO_EXPLODE - elapsed;
+            long maxTicks = Config.UNSTABLE_INGOT_TIMER.get() * 20L;
+            long remaining = maxTicks - elapsed;
             Style redStyle = Style.EMPTY.withColor(ChatFormatting.RED);
             if (remaining > 0) {
                 tooltipComponents.add(Component.translatable(

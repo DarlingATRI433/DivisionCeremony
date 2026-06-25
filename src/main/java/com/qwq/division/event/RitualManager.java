@@ -1,17 +1,22 @@
 package com.qwq.division.event;
 
+import com.qwq.division.Config;
+
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.monster.Skeleton;
-import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -22,11 +27,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RitualManager {
     static final Map<BlockPos, ActiveRitual> RITUALS = new ConcurrentHashMap<>();
+    public static final long DEADLINE_TIME = 22000;
 
-    public static final int TOTAL_WAVES = 5;
-    public static final int ZOMBIES_PER_WAVE = 5;
-    public static final int SKELETONS_PER_WAVE = 3;
-    public static final long DEADLINE_TIME = 22000; // 凌晨4:00
+    // 缓存的实体类型列表
+    private static List<EntityType<?>> cachedMobTypes = null;
+    private static long lastConfigHash = 0;
 
     public enum State {
         AWAITING_GOLEM,
@@ -60,10 +65,12 @@ public class RitualManager {
         }
 
         public void updateProgress() {
+            int totalWaves = Config.RITUAL_TOTAL_WAVES.get();
             int done = currentWave - (spawnedMobs.isEmpty() ? 0 : 1);
-            int killedInWave = ZOMBIES_PER_WAVE + SKELETONS_PER_WAVE - spawnedMobs.size();
-            float waveProgress = (float) killedInWave / (ZOMBIES_PER_WAVE + SKELETONS_PER_WAVE);
-            bossBar.setProgress((done + waveProgress) / TOTAL_WAVES);
+            int perWave = Config.RITUAL_MOBS_PER_WAVE.get();
+            int killedInWave = perWave - spawnedMobs.size();
+            float waveProgress = (float) killedInWave / perWave;
+            bossBar.setProgress((done + waveProgress) / totalWaves);
         }
     }
 
@@ -84,33 +91,55 @@ public class RitualManager {
     }
 
     /**
-     * 在信标周围地表生成一波怪物
+     * 在信标周围地表生成一波怪物（配置驱动）
      */
     public static void spawnWave(ActiveRitual ritual) {
         ServerLevel level = ritual.level;
         BlockPos center = ritual.beaconPos;
+        List<EntityType<?>> types = getMobTypes();
+        int count = Config.RITUAL_MOBS_PER_WAVE.get();
 
-        for (int i = 0; i < ZOMBIES_PER_WAVE; i++) {
+        for (int i = 0; i < count; i++) {
+            EntityType<?> type = types.get(level.random.nextInt(types.size()));
             BlockPos spawnPos = findSurfacePos(level, center, 7, 20);
-            Zombie zombie = EntityType.ZOMBIE.create(level, null, spawnPos, MobSpawnType.EVENT, false, false);
-            if (zombie != null) {
-                zombie.addTag("division_ritual");
-                zombie.setGlowingTag(true);
-                level.addFreshEntity(zombie);
-                ritual.spawnedMobs.add(zombie.getUUID());
+            Mob mob = (Mob) type.create(level, null, spawnPos, MobSpawnType.EVENT, false, false);
+            if (mob != null) {
+                mob.addTag("division_ritual");
+                mob.setGlowingTag(true);
+                level.addFreshEntity(mob);
+                ritual.spawnedMobs.add(mob.getUUID());
             }
         }
+    }
 
-        for (int i = 0; i < SKELETONS_PER_WAVE; i++) {
-            BlockPos spawnPos = findSurfacePos(level, center, 7, 20);
-            Skeleton skeleton = EntityType.SKELETON.create(level, null, spawnPos, MobSpawnType.EVENT, false, false);
-            if (skeleton != null) {
-                skeleton.addTag("division_ritual");
-                skeleton.setGlowingTag(true);
-                level.addFreshEntity(skeleton);
-                ritual.spawnedMobs.add(skeleton.getUUID());
+    /**
+     * 从配置加载并缓存实体类型列表
+     */
+    @SuppressWarnings("unchecked")
+    private static List<EntityType<?>> getMobTypes() {
+        List<? extends String> configList = Config.RITUAL_MOB_TYPES.get();
+        long hash = configList.hashCode();
+        if (cachedMobTypes != null && hash == lastConfigHash) {
+            return cachedMobTypes;
+        }
+
+        List<EntityType<?>> types = new ArrayList<>();
+        for (String id : configList) {
+            ResourceLocation rl = ResourceLocation.tryParse(id.trim());
+            if (rl != null && BuiltInRegistries.ENTITY_TYPE.containsKey(rl)) {
+                EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(rl);
+                if (type != null) {
+                    types.add(type);
+                }
             }
         }
+        if (types.isEmpty()) {
+            types.add(EntityType.ZOMBIE);
+            types.add(EntityType.SKELETON);
+        }
+        cachedMobTypes = types;
+        lastConfigHash = hash;
+        return types;
     }
 
     private static BlockPos findSurfacePos(ServerLevel level, BlockPos center, int minRadius, int maxRadius) {
@@ -131,9 +160,6 @@ public class RitualManager {
         return timeOfDay >= 17500 && timeOfDay <= 18500;
     }
 
-    /**
-     * 检查是否超过时限（凌晨4:00）
-     */
     public static boolean isPastDeadline(Level level) {
         long timeOfDay = level.getDayTime() % 24000;
         return timeOfDay >= DEADLINE_TIME;
