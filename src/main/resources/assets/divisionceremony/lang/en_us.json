@@ -33,5 +33,7 @@
   "ritual.divisionceremony.already_active": "A ritual is already in progress at this beacon",
   "ritual.divisionceremony.progress": "Division Ritual",
   "ritual.divisionceremony.complete": "Ritual Complete!",
+  "ritual.divisionceremony.failed": "Ritual Failed - Out of Time",
+  "ritual.divisionceremony.failed_msg": "The ritual has failed... Dawn has arrived.",
   "ritual.divisionceremony.sigil_converted": "Your Division Sigil has been transformed into a Pseudo-Inversion Sigil!"
 }

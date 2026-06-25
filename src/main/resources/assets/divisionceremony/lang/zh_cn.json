@@ -33,5 +33,7 @@
   "ritual.divisionceremony.already_active": "该信标已有一个进行中的仪式",
   "ritual.divisionceremony.progress": "分割仪式",
   "ritual.divisionceremony.complete": "仪式完成！",
+  "ritual.divisionceremony.failed": "仪式失败 - 时间耗尽",
+  "ritual.divisionceremony.failed_msg": "仪式已失败... 黎明到来了。",
   "ritual.divisionceremony.sigil_converted": "你的分割徽章已转化为伪逆徽章！"
 }

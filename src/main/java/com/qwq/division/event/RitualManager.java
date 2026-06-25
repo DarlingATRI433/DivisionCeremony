@@ -18,15 +18,21 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 仪式管理器：追踪激活的信标仪式状态
+ * 仪式管理器：波次刷怪 + 时间限制
  */
 public class RitualManager {
     static final Map<BlockPos, ActiveRitual> RITUALS = new ConcurrentHashMap<>();
 
+    public static final int TOTAL_WAVES = 10;
+    public static final int ZOMBIES_PER_WAVE = 5;
+    public static final int SKELETONS_PER_WAVE = 3;
+    public static final long DEADLINE_TIME = 22000; // 凌晨4:00
+
     public enum State {
         AWAITING_GOLEM,
         ACTIVE,
-        COMPLETED
+        COMPLETED,
+        FAILED
     }
 
     public static class ActiveRitual {
@@ -34,15 +40,15 @@ public class RitualManager {
         public final UUID playerUUID;
         public final ServerBossEvent bossBar;
         public final Set<UUID> spawnedMobs = ConcurrentHashMap.newKeySet();
-        public final int totalMobs;
         public State state;
         public ServerLevel level;
+        public int currentWave;
 
-        public ActiveRitual(BlockPos beaconPos, UUID playerUUID, ServerLevel level, int zombieCount, int skeletonCount) {
+        public ActiveRitual(BlockPos beaconPos, UUID playerUUID, ServerLevel level) {
             this.beaconPos = beaconPos;
             this.playerUUID = playerUUID;
             this.level = level;
-            this.totalMobs = zombieCount + skeletonCount;
+            this.currentWave = 0;
             this.state = State.AWAITING_GOLEM;
 
             this.bossBar = new ServerBossEvent(
@@ -54,8 +60,10 @@ public class RitualManager {
         }
 
         public void updateProgress() {
-            int killed = totalMobs - spawnedMobs.size();
-            bossBar.setProgress((float) killed / totalMobs);
+            int done = currentWave - (spawnedMobs.isEmpty() ? 0 : 1);
+            int killedInWave = ZOMBIES_PER_WAVE + SKELETONS_PER_WAVE - spawnedMobs.size();
+            float waveProgress = (float) killedInWave / (ZOMBIES_PER_WAVE + SKELETONS_PER_WAVE);
+            bossBar.setProgress((done + waveProgress) / TOTAL_WAVES);
         }
     }
 
@@ -64,7 +72,7 @@ public class RitualManager {
     }
 
     public static void startRitual(BlockPos beaconPos, UUID playerUUID, ServerLevel level) {
-        ActiveRitual ritual = new ActiveRitual(beaconPos, playerUUID, level, 50, 30);
+        ActiveRitual ritual = new ActiveRitual(beaconPos, playerUUID, level);
         RITUALS.put(beaconPos, ritual);
     }
 
@@ -76,13 +84,13 @@ public class RitualManager {
     }
 
     /**
-     * 在信标周围地表生成僵尸和骷髅
+     * 在信标周围地表生成一波怪物
      */
-    public static void spawnRitualMobs(ActiveRitual ritual, int zombies, int skeletons) {
+    public static void spawnWave(ActiveRitual ritual) {
         ServerLevel level = ritual.level;
         BlockPos center = ritual.beaconPos;
 
-        for (int i = 0; i < zombies; i++) {
+        for (int i = 0; i < ZOMBIES_PER_WAVE; i++) {
             BlockPos spawnPos = findSurfacePos(level, center, 7, 20);
             Zombie zombie = EntityType.ZOMBIE.create(level, null, spawnPos, MobSpawnType.EVENT, false, false);
             if (zombie != null) {
@@ -93,7 +101,7 @@ public class RitualManager {
             }
         }
 
-        for (int i = 0; i < skeletons; i++) {
+        for (int i = 0; i < SKELETONS_PER_WAVE; i++) {
             BlockPos spawnPos = findSurfacePos(level, center, 7, 20);
             Skeleton skeleton = EntityType.SKELETON.create(level, null, spawnPos, MobSpawnType.EVENT, false, false);
             if (skeleton != null) {
@@ -121,5 +129,13 @@ public class RitualManager {
     public static boolean isRitualTime(Level level) {
         long timeOfDay = level.getDayTime() % 24000;
         return timeOfDay >= 17500 && timeOfDay <= 18500;
+    }
+
+    /**
+     * 检查是否超过时限（凌晨4:00）
+     */
+    public static boolean isPastDeadline(Level level) {
+        long timeOfDay = level.getDayTime() % 24000;
+        return timeOfDay >= DEADLINE_TIME;
     }
 }
