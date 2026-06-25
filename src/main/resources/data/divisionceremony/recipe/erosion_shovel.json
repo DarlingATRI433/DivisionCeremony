@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " U ",
+    " O ",
+    " O "
+  ],
+  "key": {
+    "U": {
+      "item": "divisionceremony:unstable_ingot"
+    },
+    "O": {
+      "item": "minecraft:obsidian"
+    }
+  },
+  "result": {
+    "id": "divisionceremony:erosion_shovel",
+    "count": 1
+  }
+}

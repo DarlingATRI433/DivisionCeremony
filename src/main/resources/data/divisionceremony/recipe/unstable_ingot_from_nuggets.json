@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "NNN",
+    "NNN",
+    "NNN"
+  ],
+  "key": {
+    "N": {
+      "item": "divisionceremony:unstable_nugget"
+    }
+  },
+  "result": {
+    "id": "divisionceremony:unstable_ingot",
+    "count": 1
+  }
+}
