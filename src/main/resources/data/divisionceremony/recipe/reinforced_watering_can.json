@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " MN",
+    "NAN",
+    " N "
+  ],
+  "key": {
+    "M": {
+      "item": "divisionceremony:mobius_ingot"
+    },
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "A": {
+      "item": "divisionceremony:soul_fragment"
+    }
+  },
+  "result": {
+    "id": "divisionceremony:reinforced_watering_can",
+    "count": 1
+  }
+}

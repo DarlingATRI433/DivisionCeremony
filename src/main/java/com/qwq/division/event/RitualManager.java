@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RitualManager {
     static final Map<BlockPos, ActiveRitual> RITUALS = new ConcurrentHashMap<>();
 
-    public static final int TOTAL_WAVES = 10;
+    public static final int TOTAL_WAVES = 5;
     public static final int ZOMBIES_PER_WAVE = 5;
     public static final int SKELETONS_PER_WAVE = 3;
     public static final long DEADLINE_TIME = 22000; // 凌晨4:00

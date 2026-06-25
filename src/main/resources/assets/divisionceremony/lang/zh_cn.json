@@ -25,5 +25,7 @@
   "ritual.divisionceremony.complete": "仪式完成！",
   "ritual.divisionceremony.failed": "仪式失败 - 时间耗尽",
   "ritual.divisionceremony.failed_msg": "仪式已失败... 黎明到来了。",
-  "ritual.divisionceremony.sigil_converted": "你的分割徽章已转化为伪逆徽章！"
+  "ritual.divisionceremony.sigil_converted": "你的分割徽章已转化为伪逆徽章！",
+  "ritual.divisionceremony.unbound": "已解除仪式绑定。",
+  "ritual.divisionceremony.wave": "第 %d/%d 波"
 }

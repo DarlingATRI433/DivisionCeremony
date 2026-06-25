@@ -92,7 +92,13 @@ public class DivisionEventHandler {
         BlockPos beaconPos = event.getPos();
 
         if (RitualManager.getRitual(beaconPos) != null) {
-            player.sendSystemMessage(Component.translatable("ritual.divisionceremony.already_active"));
+            // Shift+右键解除绑定
+            if (player.isShiftKeyDown()) {
+                RitualManager.removeRitual(beaconPos);
+                player.sendSystemMessage(Component.translatable("ritual.divisionceremony.unbound"));
+            } else {
+                player.sendSystemMessage(Component.translatable("ritual.divisionceremony.already_active"));
+            }
             event.setUseBlock(TriState.FALSE);
             return;
         }
@@ -249,9 +255,10 @@ public class DivisionEventHandler {
 
     private static void spawnNextWave(RitualManager.ActiveRitual ritual) {
         RitualManager.spawnWave(ritual);
-        String waveMsg = String.format("Wave %d/%d", ritual.currentWave + 1, RitualManager.TOTAL_WAVES);
         ritual.bossBar.setName(Component.translatable("ritual.divisionceremony.progress")
-                .append(" - ").append(Component.literal(waveMsg)));
+                .append(" - ")
+                .append(Component.translatable("ritual.divisionceremony.wave",
+                        ritual.currentWave + 1, RitualManager.TOTAL_WAVES)));
         ritual.updateProgress();
     }
 

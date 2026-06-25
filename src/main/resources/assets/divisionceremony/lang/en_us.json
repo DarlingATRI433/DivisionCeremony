@@ -25,5 +25,7 @@
   "ritual.divisionceremony.complete": "Ritual Complete!",
   "ritual.divisionceremony.failed": "Ritual Failed - Out of Time",
   "ritual.divisionceremony.failed_msg": "The ritual has failed... Dawn has arrived.",
-  "ritual.divisionceremony.sigil_converted": "Your Division Sigil has been transformed into a Pseudo-Inversion Sigil!"
+  "ritual.divisionceremony.sigil_converted": "Your Division Sigil has been transformed into a Pseudo-Inversion Sigil!",
+  "ritual.divisionceremony.unbound": "Ritual binding removed.",
+  "ritual.divisionceremony.wave": "Wave %d/%d"
 }
