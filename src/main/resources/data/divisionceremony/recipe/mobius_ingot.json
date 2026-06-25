@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "D",
+    "P",
+    "N"
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "P": {
+      "item": "divisionceremony:pseudo_inversion_sigil"
+    },
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    }
+  },
+  "result": {
+    "id": "divisionceremony:mobius_ingot",
+    "count": 1
+  }
+}

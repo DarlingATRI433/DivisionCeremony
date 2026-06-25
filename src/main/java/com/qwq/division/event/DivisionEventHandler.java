@@ -261,9 +261,6 @@ public class DivisionEventHandler {
         ritual.bossBar.setName(Component.translatable("ritual.divisionceremony.complete"));
 
         ServerLevel level = ritual.level;
-        BlockPos bp = ritual.beaconPos;
-        level.explode(null, bp.getX() + 0.5, bp.getY() + 1, bp.getZ() + 0.5,
-                1.0F, true, Level.ExplosionInteraction.NONE);
 
         Player player = level.getPlayerByUUID(ritual.playerUUID);
         if (player != null) {

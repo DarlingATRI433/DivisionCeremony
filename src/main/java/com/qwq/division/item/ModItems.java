@@ -52,6 +52,9 @@ public class ModItems {
     public static final DeferredItem<ReinforcedWateringCanItem> REINFORCED_WATERING_CAN =
             ITEMS.register("reinforced_watering_can", ReinforcedWateringCanItem::new);
 
+    public static final DeferredItem<MobiusIngotItem> MOBIUS_INGOT =
+            ITEMS.register("mobius_ingot", MobiusIngotItem::new);
+
     // ==================== 创造模式标签页 ====================
 
     static {
@@ -68,6 +71,7 @@ public class ModItems {
                     output.accept(PSEUDO_INVERSION_SIGIL.get());
                     output.accept(UNSTABLE_INGOT.get());
                     output.accept(UNSTABLE_NUGGET.get());
+                    output.accept(MOBIUS_INGOT.get());
                     output.accept(SOUL_FRAGMENT.get());
                     output.accept(REINFORCED_WATERING_CAN.get());
                 })
