@@ -26,5 +26,12 @@
   "item.divisionceremony.unstable_ingot.exploding": "EXPLODING!",
   "item.divisionceremony.unstable_nugget.desc": "An unstable nugget of metal",
   "item.divisionceremony.soul_fragment.desc": "A fragment of a lost soul",
-  "item.divisionceremony.reinforced_watering_can.desc": "A sturdy watering can"
+  "item.divisionceremony.reinforced_watering_can.desc": "A sturdy watering can",
+
+  "ritual.divisionceremony.wrong_time": "The ritual can only be performed between 23:30 and 0:30",
+  "ritual.divisionceremony.ready": "The beacon resonates... Kill an Iron Golem nearby to begin the ritual",
+  "ritual.divisionceremony.already_active": "A ritual is already in progress at this beacon",
+  "ritual.divisionceremony.progress": "Division Ritual",
+  "ritual.divisionceremony.complete": "Ritual Complete!",
+  "ritual.divisionceremony.sigil_converted": "Your Division Sigil has been transformed into a Pseudo-Inversion Sigil!"
 }

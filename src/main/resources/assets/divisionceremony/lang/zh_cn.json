@@ -26,5 +26,12 @@
   "item.divisionceremony.unstable_ingot.exploding": "即将爆炸！",
   "item.divisionceremony.unstable_nugget.desc": "不稳定的金属粒",
   "item.divisionceremony.soul_fragment.desc": "迷失灵魂的碎片",
-  "item.divisionceremony.reinforced_watering_can.desc": "坚固的洒水壶"
+  "item.divisionceremony.reinforced_watering_can.desc": "坚固的洒水壶",
+
+  "ritual.divisionceremony.wrong_time": "仪式只能在 23:30 ~ 0:30 之间进行",
+  "ritual.divisionceremony.ready": "信标发出共鸣... 在附近击杀一只铁傀儡以开启仪式",
+  "ritual.divisionceremony.already_active": "该信标已有一个进行中的仪式",
+  "ritual.divisionceremony.progress": "分割仪式",
+  "ritual.divisionceremony.complete": "仪式完成！",
+  "ritual.divisionceremony.sigil_converted": "你的分割徽章已转化为伪逆徽章！"
 }

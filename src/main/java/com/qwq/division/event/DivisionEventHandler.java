@@ -9,16 +9,26 @@ import com.qwq.division.item.SoulFragmentItem;
 import com.qwq.division.item.UnstableIngotItem;
 import com.qwq.division.item.ModItems;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BeaconBlock;
+import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -26,6 +36,11 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.common.util.TriState;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 模组事件处理器
@@ -60,6 +75,39 @@ public class DivisionEventHandler {
         }
     }
 
+    // ==================== 仪式触发器 ====================
+
+    @SubscribeEvent
+    public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+        if (event.getLevel().isClientSide) return;
+        Player player = event.getEntity();
+        ItemStack stack = event.getItemStack();
+
+        if (!(stack.getItem() instanceof DivisionSigilItem)) return;
+        if (!(event.getLevel().getBlockState(event.getPos()).getBlock() instanceof BeaconBlock)) return;
+
+        if (!(event.getLevel().getBlockEntity(event.getPos()) instanceof BeaconBlockEntity)) return;
+
+        BlockPos beaconPos = event.getPos();
+
+        if (RitualManager.getRitual(beaconPos) != null) {
+            player.sendSystemMessage(Component.translatable("ritual.divisionceremony.already_active"));
+            event.setUseBlock(TriState.FALSE);
+            return;
+        }
+
+        if (!RitualManager.isRitualTime(event.getLevel())) {
+            player.sendSystemMessage(Component.translatable("ritual.divisionceremony.wrong_time"));
+            event.setUseBlock(TriState.FALSE);
+            return;
+        }
+
+        RitualManager.startRitual(beaconPos, player.getUUID(), (ServerLevel) event.getLevel());
+        player.sendSystemMessage(Component.translatable("ritual.divisionceremony.ready"));
+        event.setUseBlock(TriState.FALSE);
+        event.setCancellationResult(InteractionResult.SUCCESS);
+    }
+
     // ==================== 合成事件 ====================
 
     @SubscribeEvent
@@ -77,7 +125,14 @@ public class DivisionEventHandler {
                     returned.setDamageValue(newDamage);
                     event.getEntity().addItem(returned);
                 }
-                // 耐久耗尽则摧毁，不返还
+                break;
+            }
+        }
+
+        // 伪逆徽章不消耗
+        for (int i = 0; i < event.getInventory().getContainerSize(); i++) {
+            if (event.getInventory().getItem(i).getItem() == ModItems.PSEUDO_INVERSION_SIGIL.get()) {
+                event.getEntity().addItem(new ItemStack(ModItems.PSEUDO_INVERSION_SIGIL.get()));
                 break;
             }
         }
@@ -86,7 +141,6 @@ public class DivisionEventHandler {
         if (result.getItem() == ModItems.UNSTABLE_INGOT.get()) {
             boolean makeStable = false;
 
-            // 伪逆徽章合成 → 稳定
             for (int i = 0; i < event.getInventory().getContainerSize(); i++) {
                 if (event.getInventory().getItem(i).getItem() == ModItems.PSEUDO_INVERSION_SIGIL.get()) {
                     makeStable = true;
@@ -94,7 +148,6 @@ public class DivisionEventHandler {
                 }
             }
 
-            // 9粒压缩合成 → 稳定
             if (!makeStable) {
                 boolean allNuggets = true;
                 int count = 0;
@@ -131,22 +184,94 @@ public class DivisionEventHandler {
         }
     }
 
-    // ==================== 掉落事件 ====================
+    // ==================== 死亡事件 ====================
 
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
-        if (event.getEntity() instanceof WitherBoss || event.getEntity() instanceof EnderDragon) {
-            if (!event.getEntity().level().isClientSide) {
-                event.getEntity().level().addFreshEntity(new ItemEntity(
-                        event.getEntity().level(),
-                        event.getEntity().getX(),
-                        event.getEntity().getY(),
-                        event.getEntity().getZ(),
-                        new ItemStack(ModItems.DIVISION_SIGIL.get())
-                ));
+        if (event.getEntity().level().isClientSide) return;
+        Entity entity = event.getEntity();
+
+        // 凋灵和末影龙掉落分割徽章
+        if (entity instanceof WitherBoss || entity instanceof EnderDragon) {
+            entity.level().addFreshEntity(new ItemEntity(
+                    entity.level(), entity.getX(), entity.getY(), entity.getZ(),
+                    new ItemStack(ModItems.DIVISION_SIGIL.get())
+            ));
+        }
+
+        // 仪式怪物死亡 → 更新进度
+        if (entity.getTags().contains("division_ritual")) {
+            checkRitualMobDeath(entity);
+        }
+
+        // 铁傀儡死亡 → 触发仪式刷怪
+        if (entity instanceof IronGolem) {
+            checkIronGolemRitualTrigger(entity);
+        }
+    }
+
+    private static void checkIronGolemRitualTrigger(Entity golem) {
+        BlockPos pos = golem.blockPosition();
+        for (BlockPos beaconPos : BlockPos.betweenClosed(pos.offset(-7, -7, -7), pos.offset(7, 7, 7))) {
+            RitualManager.ActiveRitual ritual = RitualManager.getRitual(beaconPos.immutable());
+            if (ritual != null && ritual.state == RitualManager.State.AWAITING_GOLEM) {
+                ritual.state = RitualManager.State.ACTIVE;
+                ServerLevel level = ritual.level;
+                Player player = level.getPlayerByUUID(ritual.playerUUID);
+                if (player != null) {
+                    ritual.bossBar.addPlayer((ServerPlayer) player);
+                }
+                RitualManager.spawnRitualMobs(ritual, 50, 30);
+                return;
             }
         }
     }
+
+    private static void checkRitualMobDeath(Entity entity) {
+        // 使用快照遍历避免并发修改
+        Map<BlockPos, RitualManager.ActiveRitual> snapshot = new HashMap<>(RitualManager.RITUALS);
+        for (RitualManager.ActiveRitual ritual : snapshot.values()) {
+            if (ritual.state != RitualManager.State.ACTIVE) continue;
+
+            if (ritual.spawnedMobs.remove(entity.getUUID())) {
+                ritual.updateProgress();
+
+                if (ritual.spawnedMobs.isEmpty()) {
+                    ritual.state = RitualManager.State.COMPLETED;
+                    ritual.bossBar.setProgress(1.0f);
+                    ritual.bossBar.setName(Component.translatable("ritual.divisionceremony.complete"));
+
+                    // 放烟花
+                    ServerLevel level = ritual.level;
+                    BlockPos bp = ritual.beaconPos;
+                    level.explode(null, bp.getX() + 0.5, bp.getY() + 1, bp.getZ() + 0.5,
+                            1.0F, true, Level.ExplosionInteraction.NONE);
+
+                    // 转换背包中的分割徽章
+                    Player player = level.getPlayerByUUID(ritual.playerUUID);
+                    if (player != null) {
+                        convertSigil(player);
+                    }
+
+                    // 延迟清理仪式
+                    level.getServer().execute(() -> RitualManager.removeRitual(ritual.beaconPos));
+                }
+            }
+        }
+    }
+
+    private static void convertSigil(Player player) {
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack stack = player.getInventory().getItem(i);
+            if (stack.getItem() instanceof DivisionSigilItem) {
+                player.getInventory().setItem(i, new ItemStack(ModItems.PSEUDO_INVERSION_SIGIL.get()));
+                player.sendSystemMessage(Component.translatable("ritual.divisionceremony.sigil_converted"));
+                return;
+            }
+        }
+    }
+
+    // ==================== 不稳定锭事件 ====================
 
     @SubscribeEvent
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
@@ -156,8 +281,7 @@ public class DivisionEventHandler {
                 Long creationTime = stack.get(timerType());
                 if (creationTime != null) {
                     itemEntity.discard();
-                    UnstableIngotItem.triggerExplosion(
-                            event.getLevel(), itemEntity, stack);
+                    UnstableIngotItem.triggerExplosion(event.getLevel(), itemEntity, stack);
                 }
             }
         }
