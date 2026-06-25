@@ -2,10 +2,16 @@ package com.qwq.division.event;
 
 import com.qwq.division.DivisionCeremony;
 import com.qwq.division.item.DivisionDataComponents;
+import com.qwq.division.item.EthericSwordItem;
+import com.qwq.division.item.HealingAxeItem;
 import com.qwq.division.item.UnstableIngotItem;
 import com.qwq.division.item.ModItems;
 
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -15,6 +21,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
@@ -27,6 +34,37 @@ public class DivisionEventHandler {
     private static DataComponentType<Long> timerType() {
         return DivisionDataComponents.UNSTABLE_CREATION_TIME.get();
     }
+
+    // ==================== 物品攻击行为 ====================
+
+    /**
+     * 天域之剑：魔法伤害（无视护甲）
+     * 治愈之斧：攻击非亡灵时取消伤害，给予生命恢复效果
+     */
+    @SubscribeEvent
+    public static void onAttackEntity(AttackEntityEvent event) {
+        if (event.getEntity().level().isClientSide) return;
+        Player player = event.getEntity();
+        ItemStack stack = player.getMainHandItem();
+
+        // 天域之剑 —— 转为魔法伤害，无视护甲
+        if (stack.getItem() instanceof EthericSwordItem && event.getTarget() instanceof LivingEntity target) {
+            event.setCanceled(true);
+            float damage = (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            target.hurt(player.level().damageSources().indirectMagic(player, player), damage);
+            return;
+        }
+
+        // 治愈之斧 —— 非亡灵目标不造成伤害，给予生命恢复
+        if (stack.getItem() instanceof HealingAxeItem && event.getTarget() instanceof LivingEntity target) {
+            if (!target.isInvertedHealAndHarm()) {
+                event.setCanceled(true);
+                target.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 60, 0));
+            }
+        }
+    }
+
+    // ==================== 合成事件 ====================
 
     /**
      * 分割徽章合成后保留（无限使用）
@@ -65,6 +103,8 @@ public class DivisionEventHandler {
             }
         }
     }
+
+    // ==================== 掉落事件 ====================
 
     /**
      * 凋灵和末影龙死亡时掉落分割徽章

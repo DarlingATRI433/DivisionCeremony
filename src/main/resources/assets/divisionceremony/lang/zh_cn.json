@@ -9,6 +9,8 @@
   "item.divisionceremony.division_sigil": "分割徽章",
   "item.divisionceremony.unstable_ingot": "不稳定金属锭",
   "item.divisionceremony.unstable_nugget": "不稳定金属粒",
+  "item.divisionceremony.soul_fragment": "灵魂碎片",
+  "item.divisionceremony.reinforced_watering_can": "强化洒水壶",
 
   "item.divisionceremony.destruction_pickaxe.desc": "注入毁灭之力的镐",
   "item.divisionceremony.erosion_shovel.desc": "侵蚀大地的铲",
@@ -20,5 +22,7 @@
   "item.divisionceremony.unstable_ingot.desc": "不稳定的金属锭",
   "item.divisionceremony.unstable_ingot.timer": "将在 %s 秒后爆炸",
   "item.divisionceremony.unstable_ingot.exploding": "即将爆炸！",
-  "item.divisionceremony.unstable_nugget.desc": "不稳定的金属粒"
+  "item.divisionceremony.unstable_nugget.desc": "不稳定的金属粒",
+  "item.divisionceremony.soul_fragment.desc": "迷失灵魂的碎片",
+  "item.divisionceremony.reinforced_watering_can.desc": "坚固的洒水壶"
 }

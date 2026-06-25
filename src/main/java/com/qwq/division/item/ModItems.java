@@ -13,10 +13,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  * 统一注册所有物品和创造模式标签页
  */
 public class ModItems {
-    // 物品注册器
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(DivisionCeremony.MODID);
-
-    // 创造标签页注册器
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, DivisionCeremony.MODID);
 
@@ -46,6 +43,12 @@ public class ModItems {
     public static final DeferredItem<SimpleDivisionItem> UNSTABLE_NUGGET =
             ITEMS.register("unstable_nugget", SimpleDivisionItem::new);
 
+    public static final DeferredItem<SimpleDivisionItem> SOUL_FRAGMENT =
+            ITEMS.register("soul_fragment", SimpleDivisionItem::new);
+
+    public static final DeferredItem<SimpleDivisionItem> REINFORCED_WATERING_CAN =
+            ITEMS.register("reinforced_watering_can", SimpleDivisionItem::new);
+
     // ==================== 创造模式标签页 ====================
 
     static {
@@ -61,6 +64,8 @@ public class ModItems {
                     output.accept(DIVISION_SIGIL.get());
                     output.accept(UNSTABLE_INGOT.get());
                     output.accept(UNSTABLE_NUGGET.get());
+                    output.accept(SOUL_FRAGMENT.get());
+                    output.accept(REINFORCED_WATERING_CAN.get());
                 })
                 .build());
     }

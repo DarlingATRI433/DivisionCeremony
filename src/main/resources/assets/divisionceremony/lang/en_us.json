@@ -9,6 +9,8 @@
   "item.divisionceremony.division_sigil": "Division Sigil",
   "item.divisionceremony.unstable_ingot": "Unstable Ingot",
   "item.divisionceremony.unstable_nugget": "Unstable Nugget",
+  "item.divisionceremony.soul_fragment": "Soul Fragment",
+  "item.divisionceremony.reinforced_watering_can": "Reinforced Watering Can",
 
   "item.divisionceremony.destruction_pickaxe.desc": "A pickaxe infused with destructive power",
   "item.divisionceremony.erosion_shovel.desc": "A shovel that erodes the earth",
@@ -20,5 +22,7 @@
   "item.divisionceremony.unstable_ingot.desc": "An unstable ingot of metal",
   "item.divisionceremony.unstable_ingot.timer": "Explodes in: %s seconds",
   "item.divisionceremony.unstable_ingot.exploding": "EXPLODING!",
-  "item.divisionceremony.unstable_nugget.desc": "An unstable nugget of metal"
+  "item.divisionceremony.unstable_nugget.desc": "An unstable nugget of metal",
+  "item.divisionceremony.soul_fragment.desc": "A fragment of a lost soul",
+  "item.divisionceremony.reinforced_watering_can.desc": "A sturdy watering can"
 }
