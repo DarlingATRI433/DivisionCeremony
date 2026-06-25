@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "divisionceremony:mobius_ingot"
+  },
+  "base": {
+    "item": "divisionceremony:destruction_pickaxe"
+  },
+  "addition": {
+    "item": "divisionceremony:mobius_ingot"
+  },
+  "result": {
+    "id": "divisionceremony:destruction_pickaxe",
+    "components": {
+      "divisionceremony:upgraded": true,
+      "minecraft:enchantments": {
+        "levels": {
+          "minecraft:efficiency": 10,
+          "minecraft:fortune": 10
+        }
+      }
+    }
+  }
+}

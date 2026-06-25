@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "divisionceremony:mobius_ingot"
+  },
+  "base": {
+    "item": "divisionceremony:erosion_shovel"
+  },
+  "addition": {
+    "item": "divisionceremony:mobius_ingot"
+  },
+  "result": {
+    "id": "divisionceremony:erosion_shovel",
+    "components": {
+      "divisionceremony:upgraded": true,
+      "minecraft:enchantments": {
+        "levels": {
+          "minecraft:efficiency": 10
+        }
+      }
+    }
+  }
+}
