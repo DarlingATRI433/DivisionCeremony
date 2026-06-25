@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
@@ -45,18 +45,21 @@ public class DivisionEventHandler {
     }
 
     /**
-     * 凋灵和末影龙掉落分割徽章
+     * 凋灵和末影龙死亡时掉落分割徽章
+     * 末影龙的 tickDeath() 不调用 dropAllDeathLoot()，故用 LivingDeathEvent 统一处理
      */
     @SubscribeEvent
-    public static void onLivingDrops(LivingDropsEvent event) {
+    public static void onLivingDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof WitherBoss || event.getEntity() instanceof EnderDragon) {
-            event.getDrops().add(new ItemEntity(
-                    event.getEntity().level(),
-                    event.getEntity().getX(),
-                    event.getEntity().getY(),
-                    event.getEntity().getZ(),
-                    new ItemStack(ModItems.DIVISION_SIGIL.get())
-            ));
+            if (!event.getEntity().level().isClientSide) {
+                event.getEntity().level().addFreshEntity(new ItemEntity(
+                        event.getEntity().level(),
+                        event.getEntity().getX(),
+                        event.getEntity().getY(),
+                        event.getEntity().getZ(),
+                        new ItemStack(ModItems.DIVISION_SIGIL.get())
+                ));
+            }
         }
     }
 
@@ -91,7 +94,6 @@ public class DivisionEventHandler {
             if (stack.getItem() == ModItems.UNSTABLE_INGOT.get()) {
                 Long creationTime = stack.get(timerType());
                 if (creationTime != null) {
-                    // 将创建时间设为0，倒计时立即归零
                     stack.set(timerType(), 0L);
                 }
             }

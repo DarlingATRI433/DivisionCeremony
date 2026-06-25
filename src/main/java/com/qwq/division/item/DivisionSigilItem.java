@@ -17,7 +17,6 @@ public class DivisionSigilItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("item.divisionceremony.division_sigil.desc"));
         tooltipComponents.add(Component.translatable("item.divisionceremony.division_sigil.drop_hint"));
     }
 }
